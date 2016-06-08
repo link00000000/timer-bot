@@ -2,11 +2,9 @@ var fs = require('fs');
 
 var auth = require('./auth.json');
 
-var request = require('request');
-
 var Discord = require('discord.js');
 
-var GIT_REPO = 'https://github.com/link00000000/battle-bot';
+var GIT_REPO = 'https://github.com/link00000000/timer-bot';
 
 var bot = new Discord.Client();
 
@@ -23,42 +21,49 @@ bot.on("message", function(msg) {
 
     } else {
 
-      var params = command.substring(7, command.length);
+      if(msg.content.charAt(6) === " ") {
+        var params = command.substring(7, command.length);
 
-        // M:S
-      if(params.indexOf(':') !== -1) {
+          // M:S
+        if(params.indexOf(':') !== -1) {
 
-        var min = parseInt(params.substring(0, params.indexOf(':')));
-        var sec = parseInt(params.substring(params.indexOf(':') + 1, params.length));
+          var min = parseInt(params.substring(0, params.indexOf(':')));
+          var sec = parseInt(params.substring(params.indexOf(':') + 1, params.length));
 
-        timer(msg, toMilli(min, sec));
+          timer(msg, toMilli(min, sec));
 
-      }
+        }
 
-        // Mm Ss
-      if(params.indexOf('m') !== -1 && params.indexOf(' ') !== -1 && params.indexOf('s') !== -1) {
+          // Mm Ss
+        if(params.indexOf('m') !== -1 && params.indexOf(' ') !== -1 && params.indexOf('s') !== -1) {
 
-        var min = parseInt(params.substring(0, params.indexOf('m')));
-        var sec = parseInt(params.substring(params.indexOf(' ') + 1, params.length));
+          var min = parseInt(params.substring(0, params.indexOf('m')));
+          var sec = parseInt(params.substring(params.indexOf(' ') + 1, params.length));
 
-        timer(msg, toMilli(min, sec));
+          timer(msg, toMilli(min, sec));
 
-        // Mm
-      } else if(params.indexOf('m') !== -1) {
+          // Mm
+        } else if(params.indexOf('m') !== -1) {
 
-        var min = parseInt(params);
-        var sec = 0;
+          var min = parseInt(params);
+          var sec = 0;
 
-        timer(msg, toMilli(min, sec));
+          timer(msg, toMilli(min, sec));
 
-        // Ss
-      } else if(params.indexOf('s') !== -1) {
+          // Ss
+        } else if(params.indexOf('s') !== -1) {
 
-        var min = 0;
-        var sec = parseInt(params);
+          var min = 0;
+          var sec = parseInt(params);
 
-        timer(msg, toMilli(min, sec));
+          timer(msg, toMilli(min, sec));
 
+        }
+      } else {
+        if(msg.content === "!timergit" || msg.content === "!timergithub") {
+          bot.reply(msg, '\nGithub: ' + GIT_REPO);
+          log(msg, 'Requested link to github repo.');
+        }
       }
 
     }

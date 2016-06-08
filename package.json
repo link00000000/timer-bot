@@ -12,6 +12,7 @@
   "dependencies": {
     "discord.js": "^7.0.1",
     "fs": "0.0.2",
+    "request": "^2.72.0",
     "require": "^2.4.20"
   }
 }
