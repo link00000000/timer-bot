@@ -20,13 +20,13 @@ Anything saved to the logs will be shown in the console also.
 If the program closes immediately after launch, make sure that the username and password in "auth.json" are correct.
 
 ## Commands List
-  • !timer <minutes>:<seconds>
+  • !timer \<minutes>:\<seconds>
   
-  • !timer <minutes>m <seconds>s
+  • !timer \<minutes>m \<seconds>s
   
-  • !timer <minutes>m
+  • !timer \<minutes>m
   
-  • !timer <seconds>s
+  • !timer \<seconds>s
 
 ## Credits
 link00000000
