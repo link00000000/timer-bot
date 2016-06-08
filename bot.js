@@ -16,7 +16,7 @@ bot.on("message", function(msg) {
 
     if(command === '!timer') {
 
-      bot.reply(msg, '**Usage**\n!timer <minutes>:<seconds>\n!timer <minutes>m <seconds>s\n!timer <minutes>m\n!timer <seconds>s');
+      bot.reply(msg, '\n**Usage**\n!timer <minutes>:<seconds>\n!timer <minutes>m <seconds>s\n!timer <minutes>m\n!timer <seconds>s');
 
     } else {
 
