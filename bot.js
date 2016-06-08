@@ -1,3 +1,6 @@
+var fs = require('fs');
+
+var request = require('request');
 
 var Discord = require('discord.js');
 
@@ -7,7 +10,7 @@ bot.on("message", function(msg) {
   var command = msg.content;
   if(command.substring(0, 6) === '!timer') {
 
-    console.log('Timer requested from ' + msg.author.username);
+    log(msg, 'New timer requested');
 
     if(command === '!timer') {
 
@@ -17,7 +20,6 @@ bot.on("message", function(msg) {
     } else {
 
       var params = command.substring(7, command.length);
-      console.log(params);
 
         // M:S
       if(params.indexOf(':') !== -1) {
@@ -98,6 +100,7 @@ function fromMilli(milli) {
 function timer(msg, duration) {
 
   bot.reply(msg, 'Timer has been set for ' + fromMilli(duration));
+  log(msg, 'Timer has been set for ' + fromMilli(duration));
 
   setTimeout(function() {
 
@@ -107,3 +110,34 @@ function timer(msg, duration) {
 }
 
 bot.login("discordtimerbot@gmail.com", "lc286739");
+
+function log(msg, text) {
+
+  var date = new Date();
+  var timestamp;
+    var hrs, mins, secs;
+    if(date.getHours() < 10) {
+      hrs = "0".toString() + date.getHours().toString();
+    } else { hrs = date.getHours(); }
+    if(date.getMinutes() < 10) {
+      mins = "0".toString() + date.getMinutes().toString();
+    } else { mins = date.getMinutes(); }
+    if(date.getSeconds() < 10) {
+      secs = "0".toString() + date.getSeconds().toString();
+    } else { secs = date.getSeconds(); }
+  timestamp = '[' + hrs +':' + mins + ':' + secs + ']';
+  var author = '[' + msg.author.username + ']';
+  var data = timestamp + ' ' + author + ' ' + text;
+
+  var fileName = './logs/' + (date.getMonth() + 1).toString() + '-' + date.getDate().toString() + '-' + date.getFullYear().toString() + '.log';
+
+  console.log(data);
+
+  try {
+    fs.accessSync(fileName, fs.F_OK);
+    fs.appendFile(fileName, data + '\r');
+  } catch (err) {
+    fs.writeFile(fileName, data);
+  }
+
+}

@@ -10,6 +10,8 @@
   "author": "link00000000",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^7.0.1"
+    "discord.js": "^7.0.1",
+    "fs": "0.0.2",
+    "require": "^2.4.20"
   }
 }
