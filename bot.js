@@ -1,8 +1,12 @@
 var fs = require('fs');
 
+var auth = require('./auth.json');
+
 var request = require('request');
 
 var Discord = require('discord.js');
+
+var GIT_REPO = 'https://github.com/link00000000/battle-bot';
 
 var bot = new Discord.Client();
 
@@ -109,7 +113,7 @@ function timer(msg, duration) {
   }, duration);
 }
 
-bot.login("discordtimerbot@gmail.com", "lc286739");
+bot.login(auth.email, auth.password);
 
 function log(msg, text) {
 
