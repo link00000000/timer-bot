@@ -57,11 +57,31 @@ bot.on("message", function(msg) {
 
           timer(msg, toMilli(min, sec));
 
+          // Unknown Time
+        } else {
+          bot.reply(msg, '\n' + params + ' is not a valid time.\nType !timer for formatting.');
+          log(msg, 'Invalid time format. ' + params);
         }
       } else {
+          // Github Repo
         if(msg.content === "!timergit" || msg.content === "!timergithub") {
           bot.reply(msg, '\nGithub: ' + GIT_REPO);
           log(msg, 'Requested link to github repo.');
+
+          // list Commands
+        } else if (msg.content === '!timerhelp') {
+          var commands =  '\n**Commands List**\n' +
+                '  • !timer <length> | Sets a timer with the given length. Type !timer for time formatting.\n' +
+                '  • !timerhelp | Shows this list.\n' +
+                '  • !timergit | Links to the github repository.\n' +
+                '  • !timergithub | Links to the github repository.';
+          bot.reply(msg, commands);
+          log(msg, 'Commands List was requested');
+        } else {
+
+          // Default Unknown
+          bot.reply(msg, '\nCommand Unknown\nType !bf4help for a list of commands.');
+          log(msg, 'Unknown Command. ' + msg.content);
         }
       }
 
