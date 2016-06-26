@@ -1,0 +1,18 @@
+{
+  "name": "timer-bot",
+  "version": "2.0.0",
+  "description": "Timer bot for Discord",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://www.github.com/link00000000/timer-bot"
+  },
+  "author": "link00000000",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^8.0.0"
+  }
+}
