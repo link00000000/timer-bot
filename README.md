@@ -7,7 +7,7 @@ Anything saved to the logs will be shown in the console also.
 
 ## Installation
 
-1. Download and extract he .zip file.
+1. Download and extract the .zip file.
 2. Make a new discord account.
 3. Log into the discord account on either the discord web application or the downloaded application.
 4. Connect to all servers that you would like the bot to be accessed on.
@@ -34,7 +34,7 @@ link00000000
 ## License
 MIT License
 
-Copyright (c) [year] [fullname]
+Copyright (c) 2016 link00000000
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
