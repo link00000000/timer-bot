@@ -1,18 +1,19 @@
 {
-  "name": "timer_bot",
-  "version": "1.0.0",
-  "description": "",
-  "main": "bot.html",
+  "name": "timer-bot",
+  "version": "2.0.0",
+  "description": "Timer bot for Discord",
+  "main": "bot.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nw"
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://www.github.com/link00000000/timer-bot"
   },
   "author": "link00000000",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^7.0.1",
-    "fs": "0.0.2",
-    "request": "^2.72.0",
-    "require": "^2.4.20"
+    "discord.js": "^8.0.0",
+    "node-json-db": "^0.7.2"
   }
 }

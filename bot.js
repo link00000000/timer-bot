@@ -1,171 +1,157 @@
-var fs = require('fs');
-
-var auth = require('./auth.json');
-
+// Discord API
 var Discord = require('discord.js');
-
-var GIT_REPO = 'https://github.com/link00000000/timer-bot';
-
 var bot = new Discord.Client();
 
-bot.on("message", function(msg) {
-  var command = msg.content;
-  if(command.substring(0, 6) === '!timer') {
+// Discord Login Credentials
+var auth = require('./auth.json');
 
-    log(msg, 'New timer requested');
+// Array holds all timers
+var timers = [];
 
-    if(command === '!timer') {
+// Starts loop that substracts from timers
+setInterval(loop, 1000);
 
-      bot.reply(msg, '\n**Usage**\n!timer <minutes>:<seconds>\n!timer <minutes>m <seconds>s\n!timer <minutes>m\n!timer <seconds>s');
-
-    } else {
-
-      if(msg.content.charAt(6) === " ") {
-        var params = command.substring(7, command.length);
-
-          // M:S
-        if(params.indexOf(':') !== -1) {
-
-          var min = parseInt(params.substring(0, params.indexOf(':')));
-          var sec = parseInt(params.substring(params.indexOf(':') + 1, params.length));
-
-          timer(msg, toMilli(min, sec));
-
-        }
-
-          // Mm Ss
-        if(params.indexOf('m') !== -1 && params.indexOf(' ') !== -1 && params.indexOf('s') !== -1) {
-
-          var min = parseInt(params.substring(0, params.indexOf('m')));
-          var sec = parseInt(params.substring(params.indexOf(' ') + 1, params.length));
-
-          timer(msg, toMilli(min, sec));
-
-          // Mm
-        } else if(params.indexOf('m') !== -1) {
-
-          var min = parseInt(params);
-          var sec = 0;
-
-          timer(msg, toMilli(min, sec));
-
-          // Ss
-        } else if(params.indexOf('s') !== -1) {
-
-          var min = 0;
-          var sec = parseInt(params);
-
-          timer(msg, toMilli(min, sec));
-
-          // Unknown Time
-        } else {
-          bot.reply(msg, '\n' + params + ' is not a valid time.\nType !timer for formatting.');
-          log(msg, 'Invalid time format. ' + params);
-        }
-      } else {
-          // Github Repo
-        if(msg.content === "!timergit" || msg.content === "!timergithub") {
-          bot.reply(msg, '\nGithub: ' + GIT_REPO);
-          log(msg, 'Requested link to github repo.');
-
-          // list Commands
-        } else if (msg.content === '!timerhelp') {
-          var commands =  '\n**Commands List**\n' +
-                '  • !timer <length> | Sets a timer with the given length. Type !timer for time formatting.\n' +
-                '  • !timerhelp | Shows this list.\n' +
-                '  • !timergit | Links to the github repository.\n' +
-                '  • !timergithub | Links to the github repository.';
-          bot.reply(msg, commands);
-          log(msg, 'Commands List was requested');
-        } else {
-
-          // Default Unknown
-          bot.reply(msg, '\nCommand Unknown\nType !bf4help for a list of commands.');
-          log(msg, 'Unknown Command. ' + msg.content);
-        }
-      }
-
-    }
-
-
-  }
+bot.on('message', function(msg) {
+	if(msg.content === '!timer') {
+		// No Parameters
+		console.log('No Parameters');
+	} else if (msg.content.charAt(6) === ' ') {
+		// New Timer
+		console.log('New Timer');
+		var params = paramHandler(msg.content.substring(7, msg.content.length));
+		newTimer(params.name, params.duration);
+	} else if(msg.content.substr(0, 6) === '!timer') {
+		// Timer Command
+		console.log('Timer Command');
+		if(msg.content.substr(0, 10) === '!timerlist') {
+			console.log(timers);
+		}
+		if(msg.content.substr(0, 12) === '!timerpause ') {
+			// Gets timerName param
+			var timerName = msg.content.substring(12, msg.content.length);
+			
+			// Decides if to send error message timer not found
+			var exists = false;
+			
+			for(i in timers) {
+				if(timers[i].name.toLowerCase() === timerName.toLowerCase()) {
+					timers[i].paused = !timers[i].paused;
+					exists = true;
+				}
+			}
+			if(!exists) {
+				console.log('Timer ' + timerName + ' does not exist');
+			}
+		}
+		if(msg.content.substr(0, 10) === '!timerleft') {
+			// Gets timerName param
+			var timerName = msg.content.substring(11, msg.content.length);
+			
+			// Decides if to send error message timer not found
+			var exists = false;
+			
+			for(i in timers) {
+				if(timers[i].name.toLowerCase() === timerName.toLowerCase()) {
+					// Create function to convert from seconds to hours, minutes, seconds
+					console.log('Timer ' + timerName + ' has ' + timers[i].timeRemaining + ' seconds remaining');
+					exists = true;
+				}
+			}
+			if(!exists) {
+				console.log('Timer ' + timerName + ' does not exist');
+			}
+		}
+	}
 });
-
-// Converts minutes and seconds into milliseconds
-function toMilli(min, sec) {
-
-  var milli = 0;
-
-  milli += min * 60000;
-  milli += sec * 1000;
-
-  return milli;
-
-}
-
-// Converts milliseconds into minutes and seconds
-function fromMilli(milli) {
-
-  var min = 0;
-  var sec = 0;
-
-  sec = milli / 1000;
-  min = Math.floor(sec / 60);
-  sec -= min * 60;
-
-  if(sec < 10) {
-    sec = '0' + sec.toString();
-  }
-  if(min < 10) {
-    min = '0' + min.toString();
-  }
-
-  return min + ':' + sec;
-
-}
-
-// Sets the timer
-function timer(msg, duration) {
-
-  bot.reply(msg, 'Timer has been set for ' + fromMilli(duration));
-  log(msg, 'Timer has been set for ' + fromMilli(duration));
-
-  setTimeout(function() {
-
-    bot.reply(msg, 'Timer has finished!');
-
-  }, duration);
-}
 
 bot.login(auth.email, auth.password);
 
-function log(msg, text) {
+// Runs once every second
+function loop() {
+	
+	// Subtracts one second from times
+	for(var i = 0; i < timers.length; i++) {
+		if(!timers[i].paused) {
+			timers[i].timeRemaining--;
+			
+			// Checks if timer is done
+			// If done removes timer from array and sends message
+			if(timers[i].timeRemaining <= 0) {
+				console.log('Timer ' + timers[i].name + ' has finished');
+				timers.splice(i, 1);
+			}
+		}
+	}
+	
+}
 
-  var date = new Date();
-  var timestamp;
-    var hrs, mins, secs;
-    if(date.getHours() < 10) {
-      hrs = "0".toString() + date.getHours().toString();
-    } else { hrs = date.getHours(); }
-    if(date.getMinutes() < 10) {
-      mins = "0".toString() + date.getMinutes().toString();
-    } else { mins = date.getMinutes(); }
-    if(date.getSeconds() < 10) {
-      secs = "0".toString() + date.getSeconds().toString();
-    } else { secs = date.getSeconds(); }
-  timestamp = '[' + hrs +':' + mins + ':' + secs + ']';
-  var author = '[' + msg.author.username + ']';
-  var data = timestamp + ' ' + author + ' ' + text;
+// Refines parameters to name and time
+function paramHandler(params) {
+	var hour, min, sec;
+	
+	var params = params.split(' ');
+	var name = params[0];
+	params.splice(0, 1);
+	
+	for(i in params) {
+		
+		// Hours	
+		if(params[i].match(/\d+hours/)) {
+			hour = params[i].replace('hours', '');
+		} else if(params[i].match(/\d+hour/)) {
+			hour = params[i].replace('hour', '');
+		} else if(params[i].match(/\d+hrs/)) {
+			hour = params[i].replace('hrs', '');
+		} else if(params[i].match(/\d+hr/)) {
+			hour = params[i].replace('hr', '');
+		} else if(params[i].match(/\d+h/)) {
+			hour = params[i].replace('h', '');
+		}
+		
+		// Minutes
+		if(params[i].match(/\d+minutes/)) {
+			min = params[i].replace('minutes', '');
+		} else if(params[i].match(/\d+minute/)) {
+			min = params[i].replace('minute', '');
+		} else if(params[i].match(/\d+mins/)) {
+			min = params[i].replace('mins', '');
+		} else if(params[i].match(/\d+min/)) {
+			min = params[i].replace('min', '');
+		} else if(params[i].match(/\d+m/)) {
+			min = params[i].replace('m', '');
+		}
+		
+		// Seconds
+		if(params[i].match(/\d+seconds/)) {
+			sec = params[i].replace('seconds', '');
+		} else if(params[i].match(/\d+second/)) {
+			sec = params[i].replace('second', '');
+		} else if(params[i].match(/\d+secs/)) {
+			sec = params[i].replace('secs', '');
+		} else if(params[i].match(/\d+sec/)) {
+			sec = params[i].replace('sec', '');
+		} else if(params[i].match(/\d+s/)) {
+			sec = params[i].replace('s', '');
+		}
+	}
+	
+	console.log('====================\nHours: ' + hour + '\nMinutes: ' + min + '\nSeconds: ' + sec);
+	
+	if(hour) {hour *= 3600} else {hour = 0}
+	if(min) {min *= 60} else {min = 0}
+	if(sec) {sec *= 1} else {sec = 0}
+	
+	var duration = hour + min + sec;
+	return {'name': name, 'duration': duration};
+}
 
-  var fileName = './logs/' + (date.getMonth() + 1).toString() + '-' + date.getDate().toString() + '-' + date.getFullYear().toString() + '.log';
-
-  console.log(data);
-
-  try {
-    fs.accessSync(fileName, fs.F_OK);
-    fs.appendFile(fileName, data + '\r');
-  } catch (err) {
-    fs.writeFile(fileName, data);
-  }
-
+// Handles new timer
+function newTimer(name, duration) {
+	var timer = {
+		'name': name,
+		'timeRemaining': duration,
+		'paused': false
+	};
+	timers.push(timer);
+	console.log(timers);
 }
